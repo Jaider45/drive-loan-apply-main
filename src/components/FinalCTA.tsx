@@ -15,9 +15,9 @@ const FinalCTA = () => {
         <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
           Tu futuro vehicular te espera. Comienza tu aplicación ahora.
         </p>
-        <Button 
-          size="lg" 
-          className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6 shadow-xl"
+        <Button
+          size="lg"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground text-base md:text-lg px-6 md:px-8 py-4 md:py-6 shadow-xl"
           onClick={scrollToForm}
         >
           Aplicar Ahora

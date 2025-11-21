@@ -11,7 +11,7 @@ const Footer = () => {
           <p className="text-background/80">
             Tu socio de confianza para el financiamiento vehicular
           </p>
-          <div className="flex justify-center gap-6 text-sm">
+          <div className="flex justify-center gap-4 md:gap-6 text-sm">
             <a href="#" className="hover:text-primary transition-colors">
               Política de Privacidad
             </a>

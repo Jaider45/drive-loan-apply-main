@@ -8,7 +8,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section id="inicio" className="relative min-h-[600px] flex items-center justify-center overflow-hidden">
+    <section id="inicio" className="relative min-h-[400px] md:min-h-[600px] flex items-center justify-center overflow-hidden">
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${heroImage})` }}
@@ -25,9 +25,9 @@ const HeroSection = () => {
           Evaluación rápida, sencilla y sin costo.<br />
           ¡Tu próximo vehículo está más cerca!
         </p>
-        <Button 
-          size="lg" 
-          className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all"
+        <Button
+          size="lg"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground text-base md:text-lg px-6 md:px-8 py-4 md:py-6 shadow-lg hover:shadow-xl transition-all"
           onClick={scrollToForm}
         >
           Comenzar mi Aplicación

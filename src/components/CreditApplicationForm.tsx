@@ -62,17 +62,17 @@ const CreditApplicationForm = () => {
                 <div className="space-y-2">
                   <Label htmlFor="phone">Teléfono *</Label>
                   <div className="flex gap-2">
-                    <Input 
-                      type="text" 
+                    <Input
+                      type="text"
                       defaultValue="+1"
-                      className="w-20"
+                      className="w-16 md:w-20"
                       disabled
                     />
-                    <Input 
-                      id="phone" 
-                      name="phone" 
-                      type="tel" 
-                      required 
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      required
                       placeholder="+123456789"
                       className="flex-1"
                     />
@@ -107,11 +107,11 @@ const CreditApplicationForm = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="idPhoto">Foto de ID o Pasaporte *</Label>
-                  <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer">
-                    <input 
-                      type="file" 
-                      id="idPhoto" 
-                      name="idPhoto" 
+                  <div className="border-2 border-dashed border-border rounded-lg p-4 md:p-8 text-center hover:border-primary/50 transition-colors cursor-pointer">
+                    <input
+                      type="file"
+                      id="idPhoto"
+                      name="idPhoto"
                       accept="image/*"
                       required
                       className="hidden"
@@ -182,11 +182,11 @@ const CreditApplicationForm = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="bankStatements">Últimos 3 estados de cuenta</Label>
-                  <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer">
-                    <input 
-                      type="file" 
-                      id="bankStatements" 
-                      name="bankStatements" 
+                  <div className="border-2 border-dashed border-border rounded-lg p-4 md:p-8 text-center hover:border-primary/50 transition-colors cursor-pointer">
+                    <input
+                      type="file"
+                      id="bankStatements"
+                      name="bankStatements"
                       accept=".pdf,image/*"
                       multiple
                       className="hidden"
@@ -244,11 +244,11 @@ const CreditApplicationForm = () => {
               {/* Social Security */}
               <div className="space-y-2">
                 <Label htmlFor="ssnPhoto">Foto de Social Security Number o ITIN</Label>
-                <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer">
-                  <input 
-                    type="file" 
-                    id="ssnPhoto" 
-                    name="ssnPhoto" 
+                <div className="border-2 border-dashed border-border rounded-lg p-4 md:p-8 text-center hover:border-primary/50 transition-colors cursor-pointer">
+                  <input
+                    type="file"
+                    id="ssnPhoto"
+                    name="ssnPhoto"
                     accept="image/*"
                     className="hidden"
                   />

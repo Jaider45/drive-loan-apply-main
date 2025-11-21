@@ -2,12 +2,12 @@ import { Lock, Shield, Building2 } from "lucide-react";
 
 const TrustSection = () => {
   return (
-    <section className="py-12 bg-muted">
+    <section className="py-6 md:py-12 bg-muted">
       <div className="container mx-auto px-4">
-        <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-              <Lock className="w-6 h-6 text-primary" />
+        <div className="flex flex-wrap justify-center items-center gap-4 md:gap-16">
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 rounded-full flex items-center justify-center">
+              <Lock className="w-5 h-5 md:w-6 md:h-6 text-primary" />
             </div>
             <div>
               <p className="font-semibold text-foreground">100% Seguro</p>
@@ -15,9 +15,9 @@ const TrustSection = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center">
-              <Shield className="w-6 h-6 text-accent" />
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-accent/10 rounded-full flex items-center justify-center">
+              <Shield className="w-5 h-5 md:w-6 md:h-6 text-accent" />
             </div>
             <div>
               <p className="font-semibold text-foreground">Datos Encriptados</p>
@@ -25,9 +25,9 @@ const TrustSection = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-              <Building2 className="w-6 h-6 text-primary" />
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 rounded-full flex items-center justify-center">
+              <Building2 className="w-5 h-5 md:w-6 md:h-6 text-primary" />
             </div>
             <div>
               <p className="font-semibold text-foreground">Bancos Aliados</p>

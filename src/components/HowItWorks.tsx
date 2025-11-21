@@ -37,9 +37,9 @@ const HowItWorks = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto snap-x snap-mandatory md:overflow-visible">
           {steps.map((step, index) => (
-            <Card key={index} className="card-shadow hover:card-shadow-lg transition-shadow">
+            <Card key={index} className="flex-shrink-0 w-72 md:w-auto card-shadow hover:card-shadow-lg transition-shadow snap-center">
               <CardHeader className="text-center pb-4">
                 <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                   <step.icon className="w-8 h-8 text-primary" />
