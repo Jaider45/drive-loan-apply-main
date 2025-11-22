@@ -36,7 +36,7 @@ const CreditApplicationForm = () => {
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
-      const r = params.get("ref") || params.get("referrer") || params.get("utm_source");
+      const r = params.get("ref") || params.get("referrer") || params.get("utm_source") || params.get("agent") || params.get("source");
       if (r) setReferrer(r);
     } catch (err) {
       // no-op in non-browser environments
@@ -169,7 +169,8 @@ const CreditApplicationForm = () => {
                       type="file"
                       id="idPhoto"
                       name="idPhoto"
-                      accept="image/*"
+                      accept="image/*,application/pdf"
+                      multiple
                       required
                       className="sr-only"
                       onChange={(e) => setIdPhotoFiles(Array.from(e.target.files || []))}
@@ -205,6 +206,9 @@ const CreditApplicationForm = () => {
                       </div>
                     )}
                   </div>
+                  <p className="text-xs text-muted-foreground">
+                    Formatos aceptados: JPG, PNG, PDF. Puede subir hasta 2 archivos si es necesario.
+                  </p>
                 </div>
               </div>
 
@@ -293,7 +297,7 @@ const CreditApplicationForm = () => {
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Intente descargarlos desde la aplicación de su banco o tome una captura de pantalla de la primera página de cada uno.
+                    Intente descargarlos desde la aplicación de su banco o tome una captura de pantalla de la primera página de cada uno. Formatos aceptados: PDF, JPG, PNG.
                   </p>
                 </div>
 
@@ -340,7 +344,7 @@ const CreditApplicationForm = () => {
                     type="file"
                     id="ssnPhoto"
                     name="ssnPhoto"
-                    accept="image/*"
+                    accept="image/*,application/pdf"
                     className="hidden"
                     onChange={(e) => setSsnFiles(Array.from(e.target.files || []))}
                   />
@@ -355,18 +359,28 @@ const CreditApplicationForm = () => {
                   </label>
 
                   {ssnFiles.length > 0 && (
-                    <div className="mt-3 text-left text-sm">
-                      <div className="font-semibold">Archivo seleccionado:</div>
-                      <ul className="list-disc pl-5 mt-1">
+                    <div className="mt-4 space-y-3">
+                      <div className="text-left text-sm font-semibold">Vista previa:</div>
+                      <div className="flex flex-wrap gap-4 justify-center">
                         {ssnFiles.map((f, i) => (
-                          <li key={i}>{f.name} — {(f.size / 1024).toFixed(0)} KB</li>
+                          <div key={i} className="relative group">
+                            <img
+                              src={URL.createObjectURL(f)}
+                              alt={`Preview ${i}`}
+                              className="h-32 w-auto object-contain rounded-md border border-border shadow-sm"
+                              onLoad={(e) => URL.revokeObjectURL((e.target as HTMLImageElement).src)}
+                            />
+                            <div className="text-xs text-muted-foreground mt-1 text-center max-w-[150px] truncate">
+                              {f.name}
+                            </div>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Nunca vamos a compartir tu información personal con más nadie.
+                  Formatos aceptados: JPG, PNG, PDF.
                 </p>
               </div>
 

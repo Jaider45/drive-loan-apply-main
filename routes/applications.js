@@ -38,7 +38,7 @@ const upload = multer({
 
 // Submit application
 router.post('/', upload.fields([
-  { name: 'idPhoto', maxCount: 1 },
+  { name: 'idPhoto', maxCount: 2 },
   { name: 'bankStatements', maxCount: 3 },
   { name: 'ssnPhoto', maxCount: 1 }
 ]), async (req, res) => {
@@ -52,7 +52,8 @@ router.post('/', upload.fields([
       monthlyIncome,
       idealCar,
       downPayment,
-      importantNotes
+      importantNotes,
+      referrer
     } = req.body;
 
     // 1. Send to n8n Webhook (Priority)
@@ -111,6 +112,7 @@ router.post('/', upload.fields([
         idealCar,
         downPayment: parseCurrency(downPayment),
         importantNotes,
+        referrer, // Include referrer in Supabase data
         idPhoto: req.files.idPhoto ? req.files.idPhoto[0].path : null,
         bankStatements: req.files.bankStatements ? req.files.bankStatements.map(file => file.path) : [],
         ssnPhoto: req.files.ssnPhoto ? req.files.ssnPhoto[0].path : null,

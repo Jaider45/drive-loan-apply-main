@@ -3,7 +3,6 @@ import HeroSection from "@/components/HeroSection";
 import CreditApplicationForm from "@/components/CreditApplicationForm";
 import HowItWorks from "@/components/HowItWorks";
 import TrustSection from "@/components/TrustSection";
-import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -15,7 +14,6 @@ const Index = () => {
         <TrustSection />
         <HowItWorks />
         <CreditApplicationForm />
-        <FinalCTA />
       </main>
       <Footer />
     </div>
