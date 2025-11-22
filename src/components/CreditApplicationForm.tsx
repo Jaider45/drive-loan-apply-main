@@ -4,8 +4,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
-import { Upload } from "lucide-react";
-import { useState } from "react";
+import { Upload, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 /**
  * FORMULARIO MODULAR - FÁCIL DE REEMPLAZAR
@@ -22,11 +24,66 @@ import { useState } from "react";
 const CreditApplicationForm = () => {
   const [monthlyIncome, setMonthlyIncome] = useState([10000]);
   const [downPayment, setDownPayment] = useState([5000]);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { toast } = useToast();
+  const [submitting, setSubmitting] = useState(false);
+  const [referrer, setReferrer] = useState<string | null>(null);
+  const [idPhotoFiles, setIdPhotoFiles] = useState<File[]>([]);
+  const [bankStatementFiles, setBankStatementFiles] = useState<File[]>([]);
+  const [ssnFiles, setSsnFiles] = useState<File[]>([]);
+
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const r = params.get("ref") || params.get("referrer") || params.get("utm_source") || params.get("agent") || params.get("source");
+      if (r) setReferrer(r);
+    } catch (err) {
+      // no-op in non-browser environments
+    }
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Placeholder - aquí iría la lógica real de envío
-    alert('Formulario enviado (placeholder)');
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+
+    if (referrer) {
+      formData.append("referrer", referrer);
+    }
+
+    try {
+      setSubmitting(true);
+      // Use relative URL; Vite dev server proxies `/api` to the backend (see `vite.config.ts`).
+      const res = await fetch(`/api/applications`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({ message: `HTTP ${res.status}` }));
+        throw new Error(error.message || `HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
+      toast({ title: "Enviado", description: "Tu aplicación fue enviada correctamente." });
+      form.reset();
+      setMonthlyIncome([10000]);
+      setDownPayment([5000]);
+      navigate('/success');
+    } catch (error: any) {
+      const msg = String(error.message || error || "Error de red");
+      if (msg.includes("Failed to fetch") || msg.includes("NetworkError") || msg.includes("ECONNRESET") || msg.includes("connect")) {
+        toast({
+          title: "Error de conexión",
+          description: "No se pudo conectar al backend. Asegúrate de ejecutar el servidor (ej. `npm run server` o `npm run server:dev`).",
+        });
+      } else {
+        toast({ title: "Error al enviar", description: msg });
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -41,20 +98,20 @@ const CreditApplicationForm = () => {
               Completa los siguientes datos para que podamos evaluar tu perfil
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent>
             {/* INICIO DEL FORMULARIO - SECCIÓN REEMPLAZABLE */}
             <form onSubmit={handleSubmit} className="space-y-6">
-              
+
               {/* Información Personal */}
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="fullName">Nombre y apellidos *</Label>
-                  <Input 
-                    id="fullName" 
-                    name="fullName" 
-                    type="text" 
-                    required 
+                  <Input
+                    id="fullName"
+                    name="fullName"
+                    type="text"
+                    required
                     placeholder="Juan Pérez"
                   />
                 </div>
@@ -78,14 +135,14 @@ const CreditApplicationForm = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="address">Dirección personal *</Label>
-                  <Input 
-                    id="address" 
-                    name="address" 
-                    type="text" 
-                    required 
+                  <Input
+                    id="address"
+                    name="address"
+                    type="text"
+                    required
                   />
                   <p className="text-xs text-muted-foreground">
                     Nunca vamos a compartir tu información personal con más nadie.
@@ -94,10 +151,10 @@ const CreditApplicationForm = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input 
-                    id="email" 
-                    name="email" 
-                    type="email" 
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
                     placeholder="juan.perez@ejemplo.com"
                   />
                   <p className="text-xs text-muted-foreground">
@@ -112,9 +169,11 @@ const CreditApplicationForm = () => {
                       type="file"
                       id="idPhoto"
                       name="idPhoto"
-                      accept="image/*"
+                      accept="image/*,application/pdf"
+                      multiple
                       required
-                      className="hidden"
+                      className="sr-only"
+                      onChange={(e) => setIdPhotoFiles(Array.from(e.target.files || []))}
                     />
                     <label htmlFor="idPhoto" className="cursor-pointer flex flex-col items-center gap-2">
                       <Upload className="w-8 h-8 text-muted-foreground" />
@@ -125,7 +184,31 @@ const CreditApplicationForm = () => {
                         Tamaño límite: 10MB por archivo
                       </p>
                     </label>
+
+                    {idPhotoFiles.length > 0 && (
+                      <div className="mt-4 space-y-3">
+                        <div className="text-left text-sm font-semibold">Vista previa:</div>
+                        <div className="flex flex-wrap gap-4 justify-center">
+                          {idPhotoFiles.map((f, i) => (
+                            <div key={i} className="relative group">
+                              <img
+                                src={URL.createObjectURL(f)}
+                                alt={`Preview ${i}`}
+                                className="h-32 w-auto object-contain rounded-md border border-border shadow-sm"
+                                onLoad={(e) => URL.revokeObjectURL((e.target as HTMLImageElement).src)}
+                              />
+                              <div className="text-xs text-muted-foreground mt-1 text-center max-w-[150px] truncate">
+                                {f.name}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
+                  <p className="text-xs text-muted-foreground">
+                    Formatos aceptados: JPG, PNG, PDF. Puede subir hasta 2 archivos si es necesario.
+                  </p>
                 </div>
               </div>
 
@@ -133,10 +216,10 @@ const CreditApplicationForm = () => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="employmentInfo">Información de empleo</Label>
-                  <Input 
-                    id="employmentInfo" 
-                    name="employmentInfo" 
-                    type="text" 
+                  <Input
+                    id="employmentInfo"
+                    name="employmentInfo"
+                    type="text"
                     placeholder="(Compañía) (Puesto que ocupa) (Tiempo en el puesto)"
                   />
                   <p className="text-xs text-muted-foreground">
@@ -147,7 +230,7 @@ const CreditApplicationForm = () => {
                 <div className="space-y-4">
                   <Label htmlFor="monthlyIncome">Ingreso mensual total</Label>
                   <div className="pt-2">
-                    <Slider 
+                    <Slider
                       id="monthlyIncome"
                       name="monthlyIncome"
                       min={0}
@@ -170,9 +253,9 @@ const CreditApplicationForm = () => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="idealCar">Carro ideal</Label>
-                  <Input 
-                    id="idealCar" 
-                    name="idealCar" 
+                  <Input
+                    id="idealCar"
+                    name="idealCar"
                     type="text"
                   />
                   <p className="text-xs text-muted-foreground">
@@ -190,6 +273,7 @@ const CreditApplicationForm = () => {
                       accept=".pdf,image/*"
                       multiple
                       className="hidden"
+                      onChange={(e) => setBankStatementFiles(Array.from(e.target.files || []))}
                     />
                     <label htmlFor="bankStatements" className="cursor-pointer flex flex-col items-center gap-2">
                       <Upload className="w-8 h-8 text-muted-foreground" />
@@ -200,16 +284,27 @@ const CreditApplicationForm = () => {
                         Tamaño límite: 10MB por archivo
                       </p>
                     </label>
+
+                    {bankStatementFiles.length > 0 && (
+                      <div className="mt-3 text-left text-sm">
+                        <div className="font-semibold">Archivos seleccionados:</div>
+                        <ul className="list-disc pl-5 mt-1">
+                          {bankStatementFiles.map((f, i) => (
+                            <li key={i}>{f.name} — {(f.size / 1024).toFixed(0)} KB</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Intente descargarlos desde la aplicación de su banco o tome una captura de pantalla de la primera página de cada uno.
+                    Intente descargarlos desde la aplicación de su banco o tome una captura de pantalla de la primera página de cada uno. Formatos aceptados: PDF, JPG, PNG.
                   </p>
                 </div>
 
                 <div className="space-y-4">
                   <Label htmlFor="downPayment">Down payment deseado *</Label>
                   <div className="pt-2">
-                    <Slider 
+                    <Slider
                       id="downPayment"
                       name="downPayment"
                       min={0}
@@ -231,9 +326,9 @@ const CreditApplicationForm = () => {
               {/* Notas Importantes */}
               <div className="space-y-2">
                 <Label htmlFor="importantNotes">Notas importantes</Label>
-                <Textarea 
-                  id="importantNotes" 
-                  name="importantNotes" 
+                <Textarea
+                  id="importantNotes"
+                  name="importantNotes"
                   rows={4}
                 />
                 <p className="text-xs text-muted-foreground">
@@ -249,8 +344,9 @@ const CreditApplicationForm = () => {
                     type="file"
                     id="ssnPhoto"
                     name="ssnPhoto"
-                    accept="image/*"
+                    accept="image/*,application/pdf"
                     className="hidden"
+                    onChange={(e) => setSsnFiles(Array.from(e.target.files || []))}
                   />
                   <label htmlFor="ssnPhoto" className="cursor-pointer flex flex-col items-center gap-2">
                     <Upload className="w-8 h-8 text-muted-foreground" />
@@ -261,19 +357,48 @@ const CreditApplicationForm = () => {
                       Tamaño límite: 10MB por archivo
                     </p>
                   </label>
+
+                  {ssnFiles.length > 0 && (
+                    <div className="mt-4 space-y-3">
+                      <div className="text-left text-sm font-semibold">Vista previa:</div>
+                      <div className="flex flex-wrap gap-4 justify-center">
+                        {ssnFiles.map((f, i) => (
+                          <div key={i} className="relative group">
+                            <img
+                              src={URL.createObjectURL(f)}
+                              alt={`Preview ${i}`}
+                              className="h-32 w-auto object-contain rounded-md border border-border shadow-sm"
+                              onLoad={(e) => URL.revokeObjectURL((e.target as HTMLImageElement).src)}
+                            />
+                            <div className="text-xs text-muted-foreground mt-1 text-center max-w-[150px] truncate">
+                              {f.name}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Nunca vamos a compartir tu información personal con más nadie.
+                  Formatos aceptados: JPG, PNG, PDF.
                 </p>
               </div>
 
               {/* Botón de Envío */}
               <div className="pt-4">
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-6"
+                  disabled={submitting}
                 >
-                  Enviar
+                  {submitting ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Enviando...
+                    </span>
+                  ) : (
+                    "Enviar"
+                  )}
                 </Button>
               </div>
             </form>
