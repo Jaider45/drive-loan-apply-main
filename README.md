@@ -1,3 +1,49 @@
+# Drive Loan Apply — Local dev & deploy
+
+This repository contains a Vite + React frontend and an Express backend in the same project. The repo is configured to run both locally and to be built into a single Docker image for production.
+
+Quick start (local):
+
+1. Copy example env and edit values:
+
+```powershell
+Copy-Item .env.example .env
+notepad .env
+```
+
+2. Install dependencies:
+
+```powershell
+npm install
+```
+
+3. Run backend and frontend concurrently (development):
+
+```powershell
+npm run dev:all
+```
+
+4. Backend health check:
+
+Open `http://localhost:<PORT>/api/health` (PORT is the backend `PORT` or `BACKEND_PORT` defined in `.env`).
+
+Production build & run locally:
+
+```powershell
+npm run build
+npm start
+```
+
+Or build and run with Docker:
+
+```powershell
+docker build -t drive-loan-app .
+docker run -p 5000:5000 --env-file .env drive-loan-app
+```
+
+Notes
+- The frontend uses Vite dev server on port 8080 during development and proxies `/api` to the backend. The proxy reads `BACKEND_PORT` or `PORT` from `.env`.
+- The admin panel is available at `/admin` and is protected by `VITE_ADMIN_PASSWORD` (client-side check). For secure production auth, add a server-side auth layer.
 # Welcome to your Lovable project
 
 ## Project info
