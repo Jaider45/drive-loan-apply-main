@@ -7,6 +7,7 @@ import { Slider } from "@/components/ui/slider";
 import { Upload, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 /**
  * FORMULARIO MODULAR - FÁCIL DE REEMPLAZAR
@@ -23,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 const CreditApplicationForm = () => {
   const [monthlyIncome, setMonthlyIncome] = useState([10000]);
   const [downPayment, setDownPayment] = useState([5000]);
+  const navigate = useNavigate();
 
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
@@ -68,6 +70,7 @@ const CreditApplicationForm = () => {
       form.reset();
       setMonthlyIncome([10000]);
       setDownPayment([5000]);
+      navigate('/success');
     } catch (error: any) {
       const msg = String(error.message || error || "Error de red");
       if (msg.includes("Failed to fetch") || msg.includes("NetworkError") || msg.includes("ECONNRESET") || msg.includes("connect")) {
@@ -182,13 +185,23 @@ const CreditApplicationForm = () => {
                     </label>
 
                     {idPhotoFiles.length > 0 && (
-                      <div className="mt-3 text-left text-sm">
-                        <div className="font-semibold">Archivo seleccionado:</div>
-                        <ul className="list-disc pl-5 mt-1">
+                      <div className="mt-4 space-y-3">
+                        <div className="text-left text-sm font-semibold">Vista previa:</div>
+                        <div className="flex flex-wrap gap-4 justify-center">
                           {idPhotoFiles.map((f, i) => (
-                            <li key={i}>{f.name} — {(f.size / 1024).toFixed(0)} KB</li>
+                            <div key={i} className="relative group">
+                              <img
+                                src={URL.createObjectURL(f)}
+                                alt={`Preview ${i}`}
+                                className="h-32 w-auto object-contain rounded-md border border-border shadow-sm"
+                                onLoad={(e) => URL.revokeObjectURL((e.target as HTMLImageElement).src)}
+                              />
+                              <div className="text-xs text-muted-foreground mt-1 text-center max-w-[150px] truncate">
+                                {f.name}
+                              </div>
+                            </div>
                           ))}
-                        </ul>
+                        </div>
                       </div>
                     )}
                   </div>
